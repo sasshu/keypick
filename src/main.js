@@ -23,23 +23,47 @@ const createWindow = () => {
     },
   });
 
+  const store = new Store();
+
   // ファイルアップロード
-  ipcMain.handle("open-dialog", async () => {
-    return dialog
-      .showOpenDialog(mainWindow, {
-        properties: ["openFile"],
-      })
-      .then((result) => {
-        if (result.canceled) return "";
-        return result.filePaths[0];
-      });
-  });
+  // ipcMain.handle("open-dialog", async (event) => {
+  //   return dialog
+  //     .showOpenDialog(mainWindow, {
+  //       properties: ["openFile"],
+  //     })
+  //     .then((result) => {
+  //       if (result.canceled) return "";
+  //       return result.filePaths[0];
+  //     });
+  // });
 
   // テーマカラーの設定
-  ipcMain.handle("toggle-darkmode", () => {
+  if (store.has("theme")) {
+    nativeTheme.themeSource = store.get("theme");
+  } else {
+    nativeTheme.themeSource = "system";
+  }
+  ipcMain.handle("toggle-darkmode", (event) => {
     nativeTheme.themeSource = nativeTheme.shouldUseDarkColors
       ? "light"
       : "dark";
+    store.set("theme", nativeTheme.themeSource);
+  });
+
+  // electron-store
+  ipcMain.handle("set-store", (event, key, value) => {
+    store.set(key, value);
+  });
+  ipcMain.handle("get-value", async (event, key) => {
+    return store.get(key);
+  });
+  ipcMain.handle("delete-value", (event, key) => {
+    store.delete(key);
+  });
+
+  // キー詳細ページへ遷移
+  ipcMain.handle("open-detail", (event, title) => {
+    return title;
   });
 
   // 起動時にchromeデベロッパーツールを開く
