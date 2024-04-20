@@ -25,17 +25,7 @@ const createWindow = () => {
 
   const store = new Store();
 
-  // ファイルアップロード
-  // ipcMain.handle("open-dialog", async (event) => {
-  //   return dialog
-  //     .showOpenDialog(mainWindow, {
-  //       properties: ["openFile"],
-  //     })
-  //     .then((result) => {
-  //       if (result.canceled) return "";
-  //       return result.filePaths[0];
-  //     });
-  // });
+  let keyGroupTitle = "aaa";
 
   // テーマカラーの設定
   if (store.has("theme")) {
@@ -61,14 +51,19 @@ const createWindow = () => {
     store.delete(key);
   });
 
-  // キー詳細ページへ遷移
-  ipcMain.handle("open-detail", (event, title) => {
-    return title;
+  // グループ名
+  ipcMain.handle("set-title", (event, title) => {
+    keyGroupTitle = title;
   });
+  ipcMain.handle("get-title", (event) => {
+    return keyGroupTitle;
+  });
+
+  ipcMain.handle("add-keygroup", (event) => {});
 
   // 起動時にchromeデベロッパーツールを開く
   mainWindow.webContents.openDevTools();
-  mainWindow.loadFile("src/index.html");
+  mainWindow.loadFile("src/index/index.html");
 };
 
 app.whenReady().then(() => {

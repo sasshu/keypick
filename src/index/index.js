@@ -1,12 +1,4 @@
 window.addEventListener("DOMContentLoaded", () => {
-  // const button = document.getElementById("button");
-  // const text = document.getElementById("text");
-  // button.addEventListener("click", async () => {
-  //   text.textContent = await window.api.openDialog();
-
-  //   console.log(await getValue("unicorn"));
-  // });
-
   // electron-store
   // 値を保存
   setStore = (key, value) => {
@@ -21,13 +13,16 @@ window.addEventListener("DOMContentLoaded", () => {
     window.store.delete(key);
   };
 
-  const keyAddButton = document.querySelector(".key-add-button");
+  // キーグループを追加
+  const keygroupAddButton = document.querySelector("#keygroup-add-button");
+  keygroupAddButton.addEventListener("click", window.api.addKeygroup);
 
   // キー詳細ページへ遷移
   const keyDetailButtons = document.querySelectorAll(".key-detail-button");
   keyDetailButtons.forEach((button) => {
     button.addEventListener("click", async () => {
-      console.log(await window.api.openDetail(button.textContent));
+      window.api.setTitle(button.textContent);
+      location.href = "../detail/detail.html";
     });
   });
 
