@@ -1,10 +1,4 @@
-const {
-  app,
-  BrowserWindow,
-  ipcMain,
-  dialog,
-  nativeTheme,
-} = require("electron");
+const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
 const path = require("node:path");
 const Store = require("electron-store");
 
@@ -18,14 +12,13 @@ const createWindow = () => {
     height: 720,
     title: "keypick",
     webPreferences: {
-      // contextIsolation: false,
       preload: path.join(__dirname, "preload.js"),
     },
   });
 
   const store = new Store();
 
-  let keyGroupTitle = "aaa";
+  let keyGroup = {};
 
   // テーマカラーの設定
   if (store.has("theme")) {
@@ -51,12 +44,12 @@ const createWindow = () => {
     store.delete(key);
   });
 
-  // グループ名
-  ipcMain.handle("set-title", (event, title) => {
-    keyGroupTitle = title;
+  // キーグループ
+  ipcMain.handle("pass-keygroup", (event, group) => {
+    keyGroup = group;
   });
-  ipcMain.handle("get-title", (event) => {
-    return keyGroupTitle;
+  ipcMain.handle("recieve-keygroup", (event) => {
+    return keyGroup;
   });
 
   ipcMain.handle("add-keygroup", (event) => {});
