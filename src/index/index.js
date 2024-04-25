@@ -13,7 +13,7 @@
 // };
 
 // キーグループのリストを表示
-buildKeygroupsHtml = async (keygroups) => {
+buildKeygroupsHtml = (keygroups) => {
   const keygroupsHtmls = [];
   for (const keygroup of keygroups) {
     keygroupsHtmls.push(`
@@ -29,7 +29,7 @@ buildKeygroupsHtml = async (keygroups) => {
 window.addEventListener("DOMContentLoaded", async () => {
   const keygroups = await window.store.get("keygroups");
   console.log(keygroups);
-  await buildKeygroupsHtml(keygroups);
+  buildKeygroupsHtml(keygroups);
 
   // キーグループを追加
   const keygroupAddButton = document.querySelector("#keygroup-add-button");
@@ -38,7 +38,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // キー詳細ページへ遷移
   const keyDetailButtons = document.querySelectorAll(".key-detail-button");
   keyDetailButtons.forEach((button) => {
-    button.addEventListener("click", async () => {
+    button.addEventListener("click", () => {
       const keygroup = keygroups.find((group) => group.id == button.name);
       window.api.passKeygroup(keygroup);
       location.href = "../detail/detail.html";
