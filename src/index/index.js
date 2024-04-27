@@ -39,8 +39,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   const keyDetailButtons = document.querySelectorAll(".key-detail-button");
   keyDetailButtons.forEach((button) => {
     button.addEventListener("click", () => {
-      const keygroup = keygroups.find((group) => group.id == button.name);
-      window.api.passKeygroup(keygroup);
+      const keygroupIndex = keygroups.findIndex(
+        (group) => group.id == button.name
+      );
+      window.api.passKeyGroupIndex(keygroupIndex);
       location.href = "../detail/detail.html";
     });
   });

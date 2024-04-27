@@ -18,7 +18,7 @@ const createWindow = () => {
 
   const store = new Store();
 
-  let keyGroup = {};
+  let keyGroupIndex;
 
   // テーマカラーの設定
   if (store.has("theme")) {
@@ -45,14 +45,14 @@ const createWindow = () => {
   });
 
   // キーグループ
-  ipcMain.handle("pass-keygroup", (event, group) => {
-    keyGroup = group;
+  ipcMain.handle("pass-keyGroupIndex", (event, index) => {
+    keyGroupIndex = index;
   });
-  ipcMain.handle("recieve-keygroup", (event) => {
-    return keyGroup;
+  ipcMain.handle("recieve-keyGroupIndex", (event) => {
+    return keyGroupIndex;
   });
 
-  ipcMain.handle("add-keygroup", (event) => {});
+  ipcMain.handle("add-keyGroup", (event) => {});
 
   // 起動時にchromeデベロッパーツールを開く
   mainWindow.webContents.openDevTools();

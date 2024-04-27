@@ -19,22 +19,34 @@
         <button id="back-button" class="material-icons flex-none">
           arrow_back
         </button>
-        <h1 id="key-group-title" class="text-2xl font-bold flex-auto px-2">
-          詳細
-        </h1>
+        <div id="key-group-title" class="flex-auto px-2"></div>
         <button id="theme-change-button" class="material-icons flex-none">
           brightness_medium
         </button>
       </div>
 
-      <div class="py-6 px-10">
+      <div class="pb-6 px-10">
         <ul id="key-list" class="list-decimal"></ul>
-        <!-- <button
-          id="keygroup-add-button"
-          class="material-icons float-right pt-6"
-        >
-          add
-        </button> -->
+        <div class="float-right pt-6">
+          <button
+            id="key-edit-button"
+            class="border-2 border-indigo-600 rounded-md px-3 py-1 mx-1"
+          >
+            編集
+          </button>
+          <button
+            id="key-store-button"
+            class="border-2 border-indigo-600 bg-indigo-600 text-white rounded-md px-3 py-1 mx-1 hidden"
+          >
+            保存
+          </button>
+          <button
+            id="key-delete-button"
+            class="border-2 border-rose-600 rounded-md px-3 py-1 mx-1"
+          >
+            削除
+          </button>
+        </div>
       </div>
     </div>
   </body>
