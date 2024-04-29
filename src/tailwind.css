@@ -808,3 +808,7 @@ video {
 .focus\:outline-blue-600:focus {
   outline-color: #2563eb;
 }
+
+.active\:cursor-grabbing:active {
+  cursor: grabbing;
+}
