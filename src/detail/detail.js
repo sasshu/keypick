@@ -10,6 +10,78 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await init();
 
+  // キーの編集/編集キャンセル
+  editButton.addEventListener("click", async () => {
+    isEditing = !isEditing;
+    const titleWrapper = document.querySelector("#key-group-title");
+    const labelWrappers = document.querySelectorAll(".key-label");
+    const valueElements = document.querySelectorAll(".value-input");
+
+    if (isEditing) {
+      editButton.textContent = "キャンセル";
+      deleteButton.classList.add("hidden");
+      storeButton.classList.remove("hidden");
+
+      titleWrapper.innerHTML = `<input
+        type="text"
+        value="${titleWrapper.firstElementChild.textContent.trim()}"
+        class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2"
+      />`;
+      labelWrappers.forEach((element) => {
+        element.innerHTML = `<input
+          type="text"
+          name="${element.name}"
+          value="${element.textContent.trim()}"
+          class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
+        />`;
+      });
+      valueElements.forEach((element) => {
+        element.readOnly = false;
+        element.classList.add("bg-indigo-100");
+      });
+    } else {
+      await init();
+    }
+  });
+
+  // 編集内容の保存
+  storeButton.addEventListener("click", async () => {
+    const title =
+      document.querySelector("#key-group-title").firstElementChild.value;
+    const valueInputs = document.querySelectorAll(".value-input");
+    const keyList = [];
+    valueInputs.forEach((valueInput) => {
+      keyList.push({
+        id: valueInput.name,
+        name: valueInput.previousElementSibling.firstElementChild.value,
+        value: valueInput.value,
+        isVisible: valueInput.type === "text" ? true : false,
+      });
+    });
+
+    const newKeyGroup = {
+      id: keyGroup.id,
+      name: title,
+      keys: keyList,
+    };
+    console.log(newKeyGroup);
+    await updateKeyGroup(newKeyGroup);
+    await init();
+  });
+
+  // キーグループの削除
+  deleteButton.addEventListener("click", async () => {});
+
+  // ダークモードの切り替え
+  const themeChangeButton = document.querySelector("#theme-change-button");
+  themeChangeButton.addEventListener("click", window.api.toggleDarkmode);
+
+  // ホームに戻る
+  const backButton = document.querySelector("#back-button");
+  backButton.addEventListener("click", () => {
+    location.href = "../index/index.html";
+  });
+
   async function init() {
     keyGroups = await window.store.get("keygroups");
     keyGroupIndex = await window.api.recieveKeyGroupIndex();
@@ -33,7 +105,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const keyListHtmls = [];
     for (const key of keyGroup.keys) {
       keyListHtmls.push(`
-      <li class="border-b-2 pt-6 flex items-center">
+      <li class="border-b-2 pt-6 flex items-center" draggable="true">
         <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
@@ -116,78 +188,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
     });
   }
-
-  // キーの編集/編集キャンセル
-  editButton.addEventListener("click", async () => {
-    isEditing = !isEditing;
-    const titleWrapper = document.querySelector("#key-group-title");
-    const labelWrappers = document.querySelectorAll(".key-label");
-    const valueElements = document.querySelectorAll(".value-input");
-
-    if (isEditing) {
-      editButton.textContent = "キャンセル";
-      deleteButton.classList.add("hidden");
-      storeButton.classList.remove("hidden");
-
-      titleWrapper.innerHTML = `<input
-        type="text"
-        value="${titleWrapper.firstElementChild.textContent.trim()}"
-        class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2"
-      />`;
-      labelWrappers.forEach((element) => {
-        element.innerHTML = `<input
-          type="text"
-          name="${element.name}"
-          value="${element.textContent.trim()}"
-          class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
-        />`;
-      });
-      valueElements.forEach((element) => {
-        element.readOnly = false;
-        element.classList.add("bg-indigo-100");
-      });
-    } else {
-      await init();
-    }
-  });
-
-  // 編集内容の保存
-  storeButton.addEventListener("click", async () => {
-    const title =
-      document.querySelector("#key-group-title").firstElementChild.value;
-    const valueInputs = document.querySelectorAll(".value-input");
-    const keyList = [];
-    valueInputs.forEach((valueInput) => {
-      keyList.push({
-        id: valueInput.name,
-        name: valueInput.previousElementSibling.firstElementChild.value,
-        value: valueInput.value,
-        isVisible: valueInput.type === "text" ? true : false,
-      });
-    });
-
-    const newKeyGroup = {
-      id: keyGroup.id,
-      name: title,
-      keys: keyList,
-    };
-    console.log(newKeyGroup);
-    await updateKeyGroup(newKeyGroup);
-    await init();
-  });
-
-  // キーグループの削除
-  deleteButton.addEventListener("click", async () => {});
-
-  // ダークモードの切り替え
-  const themeChangeButton = document.querySelector("#theme-change-button");
-  themeChangeButton.addEventListener("click", window.api.toggleDarkmode);
-
-  // ホームに戻る
-  const backButton = document.querySelector("#back-button");
-  backButton.addEventListener("click", () => {
-    location.href = "../index/index.html";
-  });
 });
 
 // {
