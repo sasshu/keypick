@@ -1,24 +1,10 @@
-// electron-store
-// 値を保存
-// setStore = (key, value) => {
-//   window.store.set(key, value);
-// };
-// // 保存された値を取得
-// getValue = async (key) => {
-//   return window.store.get(key);
-// };
-// // 保存された値を削除
-// deleteValue = (key) => {
-//   window.store.delete(key);
-// };
-
 // キーグループのリストを表示
 buildKeygroupsHtml = (keygroups) => {
   const keygroupsHtmls = [];
   for (const keygroup of keygroups) {
     keygroupsHtmls.push(`
       <li class="border-b-2 pt-2">
-      <button class="key-detail-button" name="${keygroup.id}">${keygroup.name}</button>
+        <button class="key-detail-button hover:opacity-50" name="${keygroup.id}">${keygroup.name}</button>
       </li>`);
   }
 

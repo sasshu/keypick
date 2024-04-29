@@ -16,6 +16,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroup = keyGroups[keyGroupIndex];
     buildDetailHtml(keyGroup);
     registerEvent();
+
+    isEditing = false;
     editButton.textContent = "編集";
     storeButton.classList.add("hidden");
     deleteButton.classList.remove("hidden");
@@ -32,20 +34,20 @@ window.addEventListener("DOMContentLoaded", async () => {
     for (const key of keyGroup.keys) {
       keyListHtmls.push(`
       <li class="border-b-2 pt-6 flex items-center">
-        <div class="key-label basis-3/12 pr-2">
+        <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
         <input name="${key.id}"
           type="${key.isVisible ? "text" : "password"}"
-          class="value-input text-black basis-7/12 p-2 focus:outline-blue-600"
+          class="value-input text-black flex-auto mx-2 p-2 focus:outline-blue-600"
           value="${key.value}"
           readonly/>
         <button name="${key.id}"
-          class="visibility-button material-icons basis-1/12 px-1">
+          class="visibility-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">
             ${key.isVisible ? "visibility_off" : "visibility"}
         </button>
         <button name="${key.id}"
-          class="copy-button material-icons basis-1/12 px-1">content_copy
+          class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">content_copy
         </button>
       </li>`);
     }
