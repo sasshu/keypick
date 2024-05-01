@@ -1,14 +1,41 @@
+import Drag from "../utility/dragging.js";
+
 window.addEventListener("DOMContentLoaded", async () => {
   let keyGroups;
   let keyGroupIndex;
   let keyGroup;
   let isEditing = false;
+  const dropZoneHtml = "<div class='key-drop-zone py-1'></div>";
 
   const editButton = document.querySelector("#key-edit-button");
   const storeButton = document.querySelector("#key-store-button");
   const deleteButton = document.querySelector("#key-delete-button");
 
   await init();
+
+  // ドラッグイベントの登録
+  const drag = new Drag(
+    document.querySelectorAll(".key-content"),
+    document.querySelectorAll(".key-drop-zone")
+  );
+
+  drag.setProcessAfterDrop(() => {
+    // querySelectorAll()で取得できるのはNodeListなので、Arrayに変換する
+    const orderedKeyIdList = Array.from(
+      document.querySelectorAll(".value-input"),
+      (element) => element.name
+    );
+
+    // データ順を変更
+    const newKeys = [];
+    orderedKeyIdList.forEach((id) => {
+      const newKey = keyGroup.keys.find((key) => key.id == id);
+      newKeys.push(newKey);
+    });
+    keyGroup.keys = [...newKeys];
+    keyGroups[keyGroupIndex] = structuredClone(keyGroup);
+    window.store.set("keygroups", keyGroups);
+  });
 
   // キーの編集/編集キャンセル
   editButton.addEventListener("click", async () => {
@@ -103,9 +130,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     ).innerHTML = `<h1 class="text-2xl font-bold">${keyGroup.name}</h1>`;
 
     const keyListHtmls = [];
-    for (const key of keyGroup.keys) {
+    keyGroup.keys.forEach((key, index) => {
       keyListHtmls.push(`
-      <li class="border-b-2 pt-6 flex items-center" draggable="true">
+      ${dropZoneHtml}
+      <li class="border-b-2 pt-4 flex items-center key-content" draggable="true">
         <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
@@ -121,8 +149,10 @@ window.addEventListener("DOMContentLoaded", async () => {
         <button name="${key.id}"
           class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">content_copy
         </button>
-      </li>`);
-    }
+      </li>
+      ${index === keyGroup.keys.length - 1 ? dropZoneHtml : ""}
+      `);
+    });
 
     const keyListElement = document.querySelector("#key-list");
     keyListElement.innerHTML = keyListHtmls.join("");
