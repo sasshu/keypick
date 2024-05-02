@@ -1,5 +1,8 @@
 export default class Drag {
+  // ドラッグ要素
   dragging;
+  // ドラッグ中に適応されるドロップゾーンのClass
+  #dropEreaClassList = ["border-indigo-500", "border-y-2"];
 
   constructor(items, dropZones) {
     this.items = items;
@@ -18,12 +21,14 @@ export default class Drag {
     });
   }
 
+  // ドロップ後に行いたい処理をインスタンス側で定義
   setProcessAfterDrop(process) {
     this.#executeProcessAfterDrop = process;
   }
 
   #executeProcessAfterDrop = () => {};
 
+  // ドロップゾーンがドラッグ要素の前後か判定
   isFront(dropZone) {
     return this.dragging.previousElementSibling === dropZone;
   }
@@ -38,8 +43,8 @@ export default class Drag {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
       if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.remove("py-1");
-        event.target.classList.add("py-3");
+        event.target.classList.add(...this.#dropEreaClassList);
+        dropZone.style.height = `${this.dragging.clientHeight}px`;
       }
     });
   }
@@ -50,8 +55,8 @@ export default class Drag {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
       if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.remove("py-3");
-        event.target.classList.add("py-1");
+        event.target.classList.remove(...this.#dropEreaClassList);
+        dropZone.style.height = "auto";
       }
     });
   }
@@ -62,8 +67,8 @@ export default class Drag {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
       if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.remove("py-3");
-        event.target.classList.add("py-1");
+        event.target.classList.remove(...this.#dropEreaClassList);
+        dropZone.style.height = "auto";
 
         const draggedParent = this.dragging.parentNode;
         // 元の場所から削除

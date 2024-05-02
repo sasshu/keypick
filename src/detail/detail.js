@@ -13,29 +13,31 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await init();
 
-  // ドラッグイベントの登録
-  const drag = new Drag(
-    document.querySelectorAll(".key-content"),
-    document.querySelectorAll(".key-drop-zone")
-  );
-
-  drag.setProcessAfterDrop(() => {
-    // querySelectorAll()で取得できるのはNodeListなので、Arrayに変換する
-    const orderedKeyIdList = Array.from(
-      document.querySelectorAll(".value-input"),
-      (element) => element.name
+  function setDragEvent() {
+    // ドラッグイベントの登録
+    const drag = new Drag(
+      document.querySelectorAll(".key-content"),
+      document.querySelectorAll(".key-drop-zone")
     );
 
-    // データ順を変更
-    const newKeys = [];
-    orderedKeyIdList.forEach((id) => {
-      const newKey = keyGroup.keys.find((key) => key.id == id);
-      newKeys.push(newKey);
+    drag.setProcessAfterDrop(() => {
+      // querySelectorAll()で取得できるのはNodeListなので、Arrayに変換する
+      const orderedKeyIdList = Array.from(
+        document.querySelectorAll(".value-input"),
+        (element) => element.name
+      );
+
+      // データ順を変更
+      const newKeys = [];
+      orderedKeyIdList.forEach((id) => {
+        const newKey = keyGroup.keys.find((key) => key.id == id);
+        newKeys.push(newKey);
+      });
+      keyGroup.keys = [...newKeys];
+      keyGroups[keyGroupIndex] = structuredClone(keyGroup);
+      window.store.set("keygroups", keyGroups);
     });
-    keyGroup.keys = [...newKeys];
-    keyGroups[keyGroupIndex] = structuredClone(keyGroup);
-    window.store.set("keygroups", keyGroups);
-  });
+  }
 
   // キーの編集/編集キャンセル
   editButton.addEventListener("click", async () => {
@@ -91,7 +93,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       name: title,
       keys: keyList,
     };
-    console.log(newKeyGroup);
     await updateKeyGroup(newKeyGroup);
     await init();
   });
@@ -162,6 +163,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   function registerEvent() {
     addEventToRevealKey();
     addEventToCopyKey();
+    setDragEvent();
   }
 
   // キーの更新（単体）
