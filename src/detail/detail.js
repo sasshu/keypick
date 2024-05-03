@@ -5,7 +5,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let keyGroupIndex;
   let keyGroup;
   let isEditing = false;
-  const dropZoneHtml = "<div class='key-drop-zone py-1'></div>";
+  const dropZoneHtml = "<div class='key-drop-zone pt-5'></div>";
 
   const editButton = document.querySelector("#key-edit-button");
   const storeButton = document.querySelector("#key-store-button");
@@ -134,7 +134,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroup.keys.forEach((key, index) => {
       keyListHtmls.push(`
       ${dropZoneHtml}
-      <li class="border-b-2 pt-4 flex items-center key-content" draggable="true">
+      <li class="border-b-2 flex items-center key-content" draggable="true">
         <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
@@ -148,7 +148,8 @@ window.addEventListener("DOMContentLoaded", async () => {
             ${key.isVisible ? "visibility_off" : "visibility"}
         </button>
         <button name="${key.id}"
-          class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">content_copy
+          class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">
+            content_copy
         </button>
       </li>
       ${index === keyGroup.keys.length - 1 ? dropZoneHtml : ""}

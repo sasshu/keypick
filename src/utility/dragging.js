@@ -2,14 +2,13 @@ export default class Drag {
   // ドラッグ要素
   dragging;
   // ドラッグ中に適応されるドロップゾーンのClass
-  #dropEreaClassList = ["border-indigo-500", "border-y-2"];
+  #dropAreaClassList = ["border-indigo-500", "border-y-2"];
 
   constructor(items, dropZones) {
-    this.items = items;
-    this.items.forEach((item) => {
+    items.forEach((item) => {
       // ドラッグが開始したときに発生
       item.addEventListener("dragstart", (event) => {
-        this.dragging = event.target;
+        this.dragging = event.currentTarget;
         event.dataTransfer.effectAllowed = "move";
       });
     });
@@ -41,10 +40,16 @@ export default class Drag {
     // ドラッグ要素がターゲットの上にあるときに発生
     dropZone.addEventListener("dragover", (event) => {
       event.preventDefault();
+
       // ドラッグ要素の前後への移動は禁止
-      if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.add(...this.#dropEreaClassList);
-        dropZone.style.height = `${this.dragging.clientHeight}px`;
+      if (
+        !this.isFront(event.currentTarget) &&
+        !this.isBehind(event.currentTarget)
+      ) {
+        event.currentTarget.classList.add(...this.#dropAreaClassList);
+        event.currentTarget.style.height = `${
+          this.dragging.clientHeight + 10
+        }px`;
       }
     });
   }
@@ -54,9 +59,12 @@ export default class Drag {
     dropZone.addEventListener("dragleave", (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
-      if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.remove(...this.#dropEreaClassList);
-        dropZone.style.height = "auto";
+      if (
+        !this.isFront(event.currentTarget) &&
+        !this.isBehind(event.currentTarget)
+      ) {
+        event.currentTarget.classList.remove(...this.#dropAreaClassList);
+        event.currentTarget.style.height = "auto";
       }
     });
   }
@@ -66,16 +74,19 @@ export default class Drag {
     dropZone.addEventListener("drop", (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
-      if (!this.isFront(dropZone) && !this.isBehind(dropZone)) {
-        event.target.classList.remove(...this.#dropEreaClassList);
-        dropZone.style.height = "auto";
+      if (
+        !this.isFront(event.currentTarget) &&
+        !this.isBehind(event.currentTarget)
+      ) {
+        event.currentTarget.classList.remove(...this.#dropAreaClassList);
+        event.currentTarget.style.height = "auto";
 
         const draggedParent = this.dragging.parentNode;
         // 元の場所から削除
         draggedParent.removeChild(this.dragging.previousElementSibling);
         // 移動先に追加
-        const newDropZone = event.target.cloneNode();
-        draggedParent.insertBefore(this.dragging, event.target);
+        const newDropZone = event.currentTarget.cloneNode();
+        draggedParent.insertBefore(this.dragging, event.currentTarget);
         draggedParent.insertBefore(newDropZone, this.dragging);
 
         this.#executeProcessAfterDrop();

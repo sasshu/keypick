@@ -3,7 +3,7 @@ import Drag from "../utility/dragging.js";
 window.addEventListener("DOMContentLoaded", async () => {
   let keyGroups = await window.store.get("keygroups");
   console.log(keyGroups);
-  const dropZoneHtml = "<div class='key-drop-zone py-1'></div>";
+  const dropZoneHtml = "<div class='key-drop-zone pt-3'></div>";
   buildKeyGroupsHtml(keyGroups);
 
   // ドラッグイベントの登録
@@ -55,7 +55,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroups.forEach((keyGroup, index) => {
       keyGroupsHtmls.push(`
         ${dropZoneHtml}
-        <li class="border-b-2 pt-2 key-group" draggable="true">
+        <li class="border-b-2 key-group" draggable="true">
           <button class="key-detail-button hover:opacity-50"
             name="${keyGroup.id}">
             ${keyGroup.name}
