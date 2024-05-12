@@ -7,9 +7,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   let isEditing = false;
   const dropZoneHtml = "<div class='key-drop-zone pt-5'></div>";
 
+  const addButton = document.querySelector("#key-add-button");
   const editButton = document.querySelector("#key-edit-button");
   const storeButton = document.querySelector("#key-store-button");
-  const deleteButton = document.querySelector("#key-delete-button");
+  const deleteButton = document.querySelector("#key-group-delete-button");
 
   await init();
 
@@ -49,6 +50,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (isEditing) {
       editButton.textContent = "キャンセル";
       deleteButton.classList.add("hidden");
+      addButton.classList.remove("invisible");
       storeButton.classList.remove("hidden");
 
       titleWrapper.innerHTML = `<input
@@ -66,7 +68,12 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
       valueElements.forEach((element) => {
         element.readOnly = false;
-        element.classList.add("bg-indigo-100");
+        element.classList.remove("bg-transparent", "outline-none");
+        element.classList.add(
+          "bg-indigo-100",
+          "focus:outline-blue-600",
+          "text-black"
+        );
       });
     } else {
       await init();
@@ -97,6 +104,31 @@ window.addEventListener("DOMContentLoaded", async () => {
     await init();
   });
 
+  // キーの追加
+  addButton.addEventListener("click", async () => {
+    const newKey = {
+      id: "",
+      name: "aa",
+      value: "bb",
+      isVisible: true,
+    };
+
+    // HTML要素を作成し、innerHTMLで中身を指定
+    const newKeyLine = document.createElement("div");
+    newKeyLine.innerHTML = prepareKeyLineHtml(newKey);
+    const newDropZone = document.createElement("div");
+    newDropZone.innerHTML = dropZoneHtml;
+
+    // fragmentを作成し、HTMLの中身をすべて投入
+    const fragment = document.createDocumentFragment();
+    fragment.appendChild(newKeyLine.firstElementChild);
+    fragment.appendChild(newDropZone.firstElementChild);
+
+    // DOMにfragmentを反映
+    const keyListElement = document.querySelector("#key-list");
+    keyListElement.appendChild(fragment);
+  });
+
   // キーグループの削除
   deleteButton.addEventListener("click", async () => {});
 
@@ -119,11 +151,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     isEditing = false;
     editButton.textContent = "編集";
+    addButton.classList.add("invisible");
     storeButton.classList.add("hidden");
     deleteButton.classList.remove("hidden");
   }
 
-  // HTMLの作成
+  // HTML（全体）の作成
   function buildDetailHtml(keyGroup) {
     console.log(keyGroup);
     document.querySelector(
@@ -134,13 +167,25 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroup.keys.forEach((key, index) => {
       keyListHtmls.push(`
       ${dropZoneHtml}
+      ${prepareKeyLineHtml(key)}
+      ${index === keyGroup.keys.length - 1 ? dropZoneHtml : ""}
+      `);
+    });
+
+    const keyListElement = document.querySelector("#key-list");
+    keyListElement.innerHTML = keyListHtmls.join("");
+  }
+
+  // HTML（キー1行）の用意
+  function prepareKeyLineHtml(key) {
+    return `
       <li class="border-b-2 flex items-center key-content" draggable="true">
         <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
         <input name="${key.id}"
           type="${key.isVisible ? "text" : "password"}"
-          class="value-input text-black flex-auto mx-2 p-2 focus:outline-blue-600"
+          class="value-input flex-auto mx-2 p-2 bg-transparent outline-none"
           value="${key.value}"
           readonly/>
         <button name="${key.id}"
@@ -152,12 +197,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             content_copy
         </button>
       </li>
-      ${index === keyGroup.keys.length - 1 ? dropZoneHtml : ""}
-      `);
-    });
-
-    const keyListElement = document.querySelector("#key-list");
-    keyListElement.innerHTML = keyListHtmls.join("");
+    `;
   }
 
   // 各イベントの登録（HTML構造が変化する場合、イベントを再登録しなければならない）
@@ -168,7 +208,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   // キーの更新（単体）
-  async function updateSingleKey(newKey) {
+  async function updateKeyLine(newKey) {
     const keyIndex = keyGroup.keys.findIndex(
       (oldKey) => oldKey.id === newKey.id
     );
@@ -193,11 +233,11 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (button.innerHTML.includes("off")) {
           valueInput.type = "password";
           button.textContent = "visibility";
-          updateSingleKey({ ...keyGroup.keys[index], isVisible: false });
+          updateKeyLine({ ...keyGroup.keys[index], isVisible: false });
         } else {
           valueInput.type = "text";
           button.textContent = "visibility_off";
-          updateSingleKey({ ...keyGroup.keys[index], isVisible: true });
+          updateKeyLine({ ...keyGroup.keys[index], isVisible: true });
         }
       });
     });

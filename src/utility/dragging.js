@@ -3,6 +3,8 @@ export default class Drag {
   dragging;
   // ドラッグ中に適応されるドロップゾーンのClass
   #dropAreaClassList = ["border-indigo-500", "border-y-2"];
+  // ドロップゾーンの高さ
+  #dropZoneHeight;
 
   constructor(items, dropZones) {
     items.forEach((item) => {
@@ -12,6 +14,8 @@ export default class Drag {
         event.dataTransfer.effectAllowed = "move";
       });
     });
+
+    this.#dropZoneHeight = dropZones[0].clientHeight;
 
     dropZones.forEach((dropZone) => {
       this.#addEventToDragOver(dropZone);
@@ -48,7 +52,7 @@ export default class Drag {
       ) {
         event.currentTarget.classList.add(...this.#dropAreaClassList);
         event.currentTarget.style.height = `${
-          this.dragging.clientHeight + 10
+          this.dragging.clientHeight + this.#dropZoneHeight
         }px`;
       }
     });
