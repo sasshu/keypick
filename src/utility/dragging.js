@@ -7,15 +7,11 @@ export default class Drag {
   #dropZoneHeight;
 
   constructor(items, dropZones) {
-    items.forEach((item) => {
-      // ドラッグが開始したときに発生
-      item.addEventListener("dragstart", (event) => {
-        this.dragging = event.currentTarget;
-        event.dataTransfer.effectAllowed = "move";
-      });
-    });
-
     this.#dropZoneHeight = dropZones[0].clientHeight;
+
+    items.forEach((item) => {
+      this.#addEventToDragStart(item);
+    });
 
     dropZones.forEach((dropZone) => {
       this.#addEventToDragOver(dropZone);
@@ -24,24 +20,64 @@ export default class Drag {
     });
   }
 
-  // ドロップ後に行いたい処理をインスタンス側で定義
-  setProcessAfterDrop(process) {
-    this.#executeProcessAfterDrop = process;
+  /**
+   * 再度イベントをセットしたいときにインスタンス側から呼び出す
+   * @param {HTMLElement} item ドラッグさせる要素
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   */
+  set(item, dropZone) {
+    this.#addEventToDragStart(item);
+    this.#addEventToDragOver(dropZone);
+    this.#addEventToDragLeave(dropZone);
+    this.#addEventToDrop(dropZone);
   }
 
+  /**
+   * ドロップ後に行いたい処理をインスタンス側で定義
+   * @param {function} callback ドロップ後に行いたい処理
+   */
+  setProcessAfterDrop(callback) {
+    this.#executeProcessAfterDrop = callback;
+  }
+
+  /** ドロップ後に行う処理 */
   #executeProcessAfterDrop = () => {};
 
-  // ドロップゾーンがドラッグ要素の前後か判定
+  /**
+   * ドロップゾーンがドラッグ要素の一つ前に存在するか判定
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   * @return {boolean} 存在するならtrue、しなければfalse
+   */
   isFront(dropZone) {
     return this.dragging.previousElementSibling === dropZone;
   }
 
+  /**
+   * ドロップゾーンがドラッグ要素の一つ後に存在するか判定
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   * @return {boolean} 存在するならtrue、しなければfalse
+   */
   isBehind(dropZone) {
     return this.dragging.nextElementSibling === dropZone;
   }
 
+  /**
+   * ドラッグが開始されたときに発生
+   * @param {HTMLElement} item ドラッグさせる要素
+   */
+  #addEventToDragStart(item) {
+    item.addEventListener("dragstart", (event) => {
+      console.log(event.currentTarget);
+      this.dragging = event.currentTarget;
+      event.dataTransfer.effectAllowed = "move";
+    });
+  }
+
+  /**
+   * ドラッグ要素がターゲットの上にあるときのイベントを登録
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   */
   #addEventToDragOver(dropZone) {
-    // ドラッグ要素がターゲットの上にあるときに発生
     dropZone.addEventListener("dragover", (event) => {
       event.preventDefault();
 
@@ -58,8 +94,11 @@ export default class Drag {
     });
   }
 
+  /**
+   * ドラッグ要素がターゲットの上から離れたときのイベントを登録
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   */
   #addEventToDragLeave(dropZone) {
-    // ドラッグ要素がターゲットの上から離れたときに発生
     dropZone.addEventListener("dragleave", (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
@@ -73,8 +112,11 @@ export default class Drag {
     });
   }
 
+  /**
+   * ドラッグ要素がドロップされたときのイベントを登録
+   * @param {HTMLElement} dropZone ドロップを受け入れる要素
+   */
   #addEventToDrop(dropZone) {
-    // ドラッグ要素がドロップされたときに発生
     dropZone.addEventListener("drop", (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止

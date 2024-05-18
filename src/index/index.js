@@ -49,7 +49,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const themeChangeButton = document.querySelector("#theme-change-button");
   themeChangeButton.addEventListener("click", window.api.toggleDarkmode);
 
-  // キーグループのリストを表示
+  /** リストページのHTML全体を作成 */
   function buildKeyGroupsHtml(keyGroups) {
     const keyGroupsHtmls = [];
     keyGroups.forEach((keyGroup, index) => {

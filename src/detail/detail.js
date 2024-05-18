@@ -5,6 +5,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   let keyGroupIndex;
   let keyGroup;
   let isEditing = false;
+  let drag;
   const dropZoneHtml = "<div class='key-drop-zone pt-5'></div>";
 
   const addButton = document.querySelector("#key-add-button");
@@ -14,9 +15,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   await init();
 
+  /** ドラッグイベントの登録 */
   function setDragEvent() {
-    // ドラッグイベントの登録
-    const drag = new Drag(
+    drag = new Drag(
       document.querySelectorAll(".key-content"),
       document.querySelectorAll(".key-drop-zone")
     );
@@ -59,21 +60,10 @@ window.addEventListener("DOMContentLoaded", async () => {
         class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2"
       />`;
       labelWrappers.forEach((element) => {
-        element.innerHTML = `<input
-          type="text"
-          name="${element.name}"
-          value="${element.textContent.trim()}"
-          class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
-        />`;
+        changeKeyLabelHtmlToUpdate(element);
       });
       valueElements.forEach((element) => {
-        element.readOnly = false;
-        element.classList.remove("bg-transparent", "outline-none");
-        element.classList.add(
-          "bg-indigo-100",
-          "focus:outline-blue-600",
-          "text-black"
-        );
+        changeValueInputHtmlToUpdate(element);
       });
     } else {
       await init();
@@ -107,7 +97,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   // キーの追加
   addButton.addEventListener("click", async () => {
     const newKey = {
-      id: "",
+      id: "xxxxx",
       name: "aa",
       value: "bb",
       isVisible: true,
@@ -116,6 +106,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     // HTML要素を作成し、innerHTMLで中身を指定
     const newKeyLine = document.createElement("div");
     newKeyLine.innerHTML = prepareKeyLineHtml(newKey);
+
+    // キー編集モードに切り替え
+    changeKeyLabelHtmlToUpdate(newKeyLine.querySelector(".key-label"));
+    changeValueInputHtmlToUpdate(newKeyLine.querySelector(".value-input"));
+
     const newDropZone = document.createElement("div");
     newDropZone.innerHTML = dropZoneHtml;
 
@@ -127,7 +122,42 @@ window.addEventListener("DOMContentLoaded", async () => {
     // DOMにfragmentを反映
     const keyListElement = document.querySelector("#key-list");
     keyListElement.appendChild(fragment);
+
+    // イベントの登録
+    drag.set(
+      keyListElement.lastElementChild.previousElementSibling,
+      keyListElement.lastElementChild
+    );
+    addEventToRevealKey();
+    addEventToCopyKey();
   });
+
+  /**
+   * キーラベルHTMLの変更
+   * @param {HTMLElement} element キーラベルのHTML要素
+   */
+  function changeKeyLabelHtmlToUpdate(element) {
+    element.innerHTML = `<input
+      type="text"
+      name="${element.name}"
+      value="${element.textContent.trim()}"
+      class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
+    />`;
+  }
+
+  /**
+   * キー入力欄HTMLの変更
+   * @param {HTMLElement} element キー入力欄のHTML要素
+   */
+  function changeValueInputHtmlToUpdate(element) {
+    element.readOnly = false;
+    element.classList.remove("bg-transparent", "outline-none");
+    element.classList.add(
+      "bg-indigo-100",
+      "focus:outline-blue-600",
+      "text-black"
+    );
+  }
 
   // キーグループの削除
   deleteButton.addEventListener("click", async () => {});
@@ -142,6 +172,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     location.href = "../index/index.html";
   });
 
+  /** 初期化処理 */
   async function init() {
     keyGroups = await window.store.get("keygroups");
     keyGroupIndex = await window.api.recieveKeyGroupIndex();
@@ -156,7 +187,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     deleteButton.classList.remove("hidden");
   }
 
-  // HTML（全体）の作成
+  /**
+   * 詳細ページのHTML全体を作成
+   * @param {{
+   * id: string,
+   * name: string,
+   * keys: array
+   * }} keyGroup キーグループデータ
+   */
   function buildDetailHtml(keyGroup) {
     console.log(keyGroup);
     document.querySelector(
@@ -176,7 +214,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyListElement.innerHTML = keyListHtmls.join("");
   }
 
-  // HTML（キー1行）の用意
+  /**
+   * HTML（キー1行）の用意
+   * @param {{
+   * id: string,
+   * name: string,
+   * value: string,
+   * isVisible: boolean,
+   * }} key キーデータ
+   */
   function prepareKeyLineHtml(key) {
     return `
       <li class="border-b-2 flex items-center key-content" draggable="true">
@@ -200,14 +246,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     `;
   }
 
-  // 各イベントの登録（HTML構造が変化する場合、イベントを再登録しなければならない）
+  /** 各イベントの登録（HTML構造が変化する場合、イベントの再登録必須）*/
   function registerEvent() {
     addEventToRevealKey();
     addEventToCopyKey();
     setDragEvent();
   }
 
-  // キーの更新（単体）
+  /**
+   * キーの更新
+   * @param {{
+   * id: string,
+   * name: string,
+   * value: string,
+   * isVisible: boolean,
+   * }} newKey 新キーデータ
+   */
   async function updateKeyLine(newKey) {
     const keyIndex = keyGroup.keys.findIndex(
       (oldKey) => oldKey.id === newKey.id
@@ -216,17 +270,24 @@ window.addEventListener("DOMContentLoaded", async () => {
     await window.store.set("keygroups", keyGroups);
   }
 
-  // キーの更新（全体）
+  /**
+   * キーグループの更新
+   * @param {{
+   * id: string,
+   * name: string,
+   * keys: array
+   * }} newKeyGroup 新キーグループデータ
+   */
   async function updateKeyGroup(newKeyGroup) {
     keyGroups[keyGroupIndex] = newKeyGroup;
     await window.store.set("keygroups", keyGroups);
   }
 
-  // キー値表示/非表示制御
+  /** キー値表示/非表示制御 */
   function addEventToRevealKey() {
     const visibilityButtons = document.querySelectorAll(".visibility-button");
     visibilityButtons.forEach((button, index) => {
-      button.addEventListener("click", async () => {
+      button.onclick = () => {
         const valueInput = document.querySelector(
           `.value-input[name='${button.name}']`
         );
@@ -239,15 +300,15 @@ window.addEventListener("DOMContentLoaded", async () => {
           button.textContent = "visibility_off";
           updateKeyLine({ ...keyGroup.keys[index], isVisible: true });
         }
-      });
+      };
     });
   }
 
-  // キー値をクリップボードにコピー
+  /** キー値をクリップボードにコピー */
   function addEventToCopyKey() {
     const copyButtons = document.querySelectorAll(".copy-button");
     copyButtons.forEach((button) => {
-      button.addEventListener("click", () => {
+      button.onclick = () => {
         const textToCopy = document.querySelector(
           `.value-input[name='${button.name}']`
         ).value;
@@ -258,7 +319,7 @@ window.addEventListener("DOMContentLoaded", async () => {
             button.textContent = "content_copy";
           }, 2000);
         });
-      });
+      };
     });
   }
 });
