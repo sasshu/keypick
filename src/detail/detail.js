@@ -47,6 +47,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const titleWrapper = document.querySelector("#key-group-title");
     const labelWrappers = document.querySelectorAll(".key-label");
     const valueElements = document.querySelectorAll(".value-input");
+    const copyButtons = document.querySelectorAll(".copy-button");
 
     if (isEditing) {
       editButton.textContent = "キャンセル";
@@ -65,6 +66,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       valueElements.forEach((element) => {
         changeValueInputHtmlToUpdate(element);
       });
+      copyButtons.forEach((element) => {
+        element.innerHTML = "delete";
+      });
+
+      toggleKeyDraggable();
     } else {
       await init();
     }
@@ -97,9 +103,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   // キーの追加
   addButton.addEventListener("click", async () => {
     const newKey = {
-      id: "xxxxx",
-      name: "aa",
-      value: "bb",
+      id: generateId("key"),
+      name: "",
+      value: "",
       isVisible: true,
     };
 
@@ -120,14 +126,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     fragment.appendChild(newDropZone.firstElementChild);
 
     // DOMにfragmentを反映
-    const keyListElement = document.querySelector("#key-list");
-    keyListElement.appendChild(fragment);
+    document.querySelector("#key-list").appendChild(fragment);
 
     // イベントの登録
-    drag.set(
-      keyListElement.lastElementChild.previousElementSibling,
-      keyListElement.lastElementChild
-    );
     addEventToRevealKey();
     addEventToCopyKey();
   });
@@ -140,6 +141,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     element.innerHTML = `<input
       type="text"
       name="${element.name}"
+      placeholder="ラベル"
       value="${element.textContent.trim()}"
       class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
     />`;
@@ -151,12 +153,38 @@ window.addEventListener("DOMContentLoaded", async () => {
    */
   function changeValueInputHtmlToUpdate(element) {
     element.readOnly = false;
+    element.placeholder = "キー値";
     element.classList.remove("bg-transparent", "outline-none");
     element.classList.add(
       "bg-indigo-100",
       "focus:outline-blue-600",
       "text-black"
     );
+  }
+
+  /** キーのドラッグ可否切り替え */
+  function toggleKeyDraggable() {
+    document.querySelectorAll(".key-content").forEach((element) => {
+      element.draggable = !element.draggable;
+    });
+  }
+
+  /**
+   * Idの生成
+   * @param {string} type Idの種類
+   * @return {string} 生成したId
+   */
+  function generateId(type) {
+    const dt = new Date();
+    const year = dt.getFullYear();
+    const month = ("0" + (dt.getMonth() + 1)).slice(-2);
+    const date = ("0" + dt.getDate()).slice(-2);
+    const hour = ("0" + dt.getHours()).slice(-2);
+    const minute = ("0" + dt.getMinutes()).slice(-2);
+    const second = ("0" + dt.getSeconds()).slice(-2);
+    const millisecond = ("000" + dt.getMilliseconds()).slice(-4);
+
+    return `${type}${year}${month}${date}${hour}${minute}${second}${millisecond}`;
   }
 
   // キーグループの削除
@@ -174,17 +202,17 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   /** 初期化処理 */
   async function init() {
-    keyGroups = await window.store.get("keygroups");
-    keyGroupIndex = await window.api.recieveKeyGroupIndex();
-    keyGroup = keyGroups[keyGroupIndex];
-    buildDetailHtml(keyGroup);
-    registerEvent();
-
     isEditing = false;
     editButton.textContent = "編集";
     addButton.classList.add("invisible");
     storeButton.classList.add("hidden");
     deleteButton.classList.remove("hidden");
+
+    keyGroups = await window.store.get("keygroups");
+    keyGroupIndex = await window.api.recieveKeyGroupIndex();
+    keyGroup = keyGroups[keyGroupIndex];
+    buildDetailHtml(keyGroup);
+    registerEvent();
   }
 
   /**
@@ -225,7 +253,7 @@ window.addEventListener("DOMContentLoaded", async () => {
    */
   function prepareKeyLineHtml(key) {
     return `
-      <li class="border-b-2 flex items-center key-content" draggable="true">
+      <li class="border-b-2 flex items-center key-content" draggable="${!isEditing}">
         <div class="key-label basis-3/12 max-w-40 mx-2">
           <p class="text-right">${key.name}</p>
         </div>
@@ -240,7 +268,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         </button>
         <button name="${key.id}"
           class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">
-            content_copy
+            ${isEditing ? "delete" : "content_copy"}
         </button>
       </li>
     `;
@@ -283,7 +311,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     await window.store.set("keygroups", keyGroups);
   }
 
-  /** キー値表示/非表示制御 */
+  /** イベントの登録（キー値表示/非表示制御） */
   function addEventToRevealKey() {
     const visibilityButtons = document.querySelectorAll(".visibility-button");
     visibilityButtons.forEach((button, index) => {
@@ -304,21 +332,27 @@ window.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  /** キー値をクリップボードにコピー */
+  /** イベントの登録（キー値をクリップボードにコピー） */
   function addEventToCopyKey() {
     const copyButtons = document.querySelectorAll(".copy-button");
     copyButtons.forEach((button) => {
       button.onclick = () => {
-        const textToCopy = document.querySelector(
-          `.value-input[name='${button.name}']`
-        ).value;
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          console.log(textToCopy);
-          button.textContent = "check";
-          setTimeout(() => {
-            button.textContent = "content_copy";
-          }, 2000);
-        });
+        if (isEditing) {
+          // HTML要素の削除
+          button.parentElement.nextElementSibling.remove();
+          button.parentElement.remove();
+        } else {
+          const textToCopy = document.querySelector(
+            `.value-input[name='${button.name}']`
+          ).value;
+          navigator.clipboard.writeText(textToCopy).then(() => {
+            console.log(textToCopy);
+            button.textContent = "check";
+            setTimeout(() => {
+              button.textContent = "content_copy";
+            }, 2000);
+          });
+        }
       };
     });
   }
