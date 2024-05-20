@@ -21,18 +21,6 @@ export default class Drag {
   }
 
   /**
-   * 再度イベントをセットしたいときにインスタンス側から呼び出す
-   * @param {HTMLElement} item ドラッグさせる要素
-   * @param {HTMLElement} dropZone ドロップを受け入れる要素
-   */
-  set(item, dropZone) {
-    this.#addEventToDragStart(item);
-    this.#addEventToDragOver(dropZone);
-    this.#addEventToDragLeave(dropZone);
-    this.#addEventToDrop(dropZone);
-  }
-
-  /**
    * ドロップ後に行いたい処理をインスタンス側で定義
    * @param {function} callback ドロップ後に行いたい処理
    */
@@ -44,7 +32,7 @@ export default class Drag {
   #executeProcessAfterDrop = () => {};
 
   /**
-   * ドロップゾーンがドラッグ要素の一つ前に存在するか判定
+   * 対象のドロップゾーンがドラッグ要素の一つ前か判定
    * @param {HTMLElement} dropZone ドロップを受け入れる要素
    * @return {boolean} 存在するならtrue、しなければfalse
    */
@@ -53,7 +41,7 @@ export default class Drag {
   }
 
   /**
-   * ドロップゾーンがドラッグ要素の一つ後に存在するか判定
+   * 対象のドロップゾーンがドラッグ要素の一つ後か判定
    * @param {HTMLElement} dropZone ドロップを受け入れる要素
    * @return {boolean} 存在するならtrue、しなければfalse
    */
@@ -62,15 +50,14 @@ export default class Drag {
   }
 
   /**
-   * ドラッグが開始されたときに発生
+   * ドラッグが開始されたときのイベントを登録
    * @param {HTMLElement} item ドラッグさせる要素
    */
   #addEventToDragStart(item) {
-    item.addEventListener("dragstart", (event) => {
-      console.log(event.currentTarget);
+    item.ondragstart = (event) => {
       this.dragging = event.currentTarget;
       event.dataTransfer.effectAllowed = "move";
-    });
+    };
   }
 
   /**
@@ -78,9 +65,8 @@ export default class Drag {
    * @param {HTMLElement} dropZone ドロップを受け入れる要素
    */
   #addEventToDragOver(dropZone) {
-    dropZone.addEventListener("dragover", (event) => {
+    dropZone.ondragover = (event) => {
       event.preventDefault();
-
       // ドラッグ要素の前後への移動は禁止
       if (
         !this.isFront(event.currentTarget) &&
@@ -91,7 +77,7 @@ export default class Drag {
           this.dragging.clientHeight + this.#dropZoneHeight
         }px`;
       }
-    });
+    };
   }
 
   /**
@@ -99,7 +85,7 @@ export default class Drag {
    * @param {HTMLElement} dropZone ドロップを受け入れる要素
    */
   #addEventToDragLeave(dropZone) {
-    dropZone.addEventListener("dragleave", (event) => {
+    dropZone.ondragleave = (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
       if (
@@ -109,7 +95,7 @@ export default class Drag {
         event.currentTarget.classList.remove(...this.#dropAreaClassList);
         event.currentTarget.style.height = "auto";
       }
-    });
+    };
   }
 
   /**
@@ -117,7 +103,7 @@ export default class Drag {
    * @param {HTMLElement} dropZone ドロップを受け入れる要素
    */
   #addEventToDrop(dropZone) {
-    dropZone.addEventListener("drop", (event) => {
+    dropZone.ondrop = (event) => {
       event.preventDefault();
       // ドラッグ要素の前後への移動は禁止
       if (
@@ -141,6 +127,6 @@ export default class Drag {
         this.#addEventToDragLeave(newDropZone);
         this.#addEventToDrop(newDropZone);
       }
-    });
+    };
   }
 }

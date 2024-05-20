@@ -30,26 +30,43 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   // キーグループを追加
-  const keyGroupAddButton = document.querySelector("#keygroup-add-button");
-  keyGroupAddButton.addEventListener("click", window.api.addKeyGroup);
+  const keyGroupAddButton = document.querySelector("#key-group-add-button");
+  keyGroupAddButton.onclick = () => {
+    // window.api.addKeyGroup;
+    console.log("add key-group");
+  };
 
   // キー詳細ページへ遷移
+  /** @type {HTMLElement[]} */
   const keyDetailButtons = document.querySelectorAll(".key-detail-button");
   keyDetailButtons.forEach((button) => {
-    button.addEventListener("click", () => {
+    button.onclick = () => {
       const keyGroupIndex = keyGroups.findIndex(
         (group) => group.id == button.name
       );
       window.api.passKeyGroupIndex(keyGroupIndex);
       location.href = "../detail/detail.html";
-    });
+    };
   });
 
   // ダークモードの切り替え
+  /** @type {HTMLElement} */
   const themeChangeButton = document.querySelector("#theme-change-button");
-  themeChangeButton.addEventListener("click", window.api.toggleDarkmode);
+  themeChangeButton.onclick = window.api.toggleDarkmode;
 
-  /** リストページのHTML全体を作成 */
+  /**
+   * リストページのHTML全体を作成
+   * @param {{
+   * id: string,
+   * name: string,
+   * keys: {
+   * id: string,
+   * name: string,
+   * value: string,
+   * isVisible: boolean,
+   * }[]
+   * }[]} keyGroups キーグループリスト
+   */
   function buildKeyGroupsHtml(keyGroups) {
     const keyGroupsHtmls = [];
     keyGroups.forEach((keyGroup, index) => {

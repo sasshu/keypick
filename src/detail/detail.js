@@ -42,7 +42,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   // キーの編集/編集キャンセル
-  editButton.addEventListener("click", async () => {
+  editButton.onclick = async () => {
     isEditing = !isEditing;
     const titleWrapper = document.querySelector("#key-group-title");
     const labelWrappers = document.querySelectorAll(".key-label");
@@ -74,10 +74,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     } else {
       await init();
     }
-  });
+  };
 
   // 編集内容の保存
-  storeButton.addEventListener("click", async () => {
+  storeButton.onclick = async () => {
     const title =
       document.querySelector("#key-group-title").firstElementChild.value;
     const valueInputs = document.querySelectorAll(".value-input");
@@ -98,10 +98,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     };
     await updateKeyGroup(newKeyGroup);
     await init();
-  });
+  };
 
   // キーの追加
-  addButton.addEventListener("click", async () => {
+  addButton.onclick = async () => {
     const newKey = {
       id: generateId("key"),
       name: "",
@@ -131,7 +131,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     // イベントの登録
     addEventToRevealKey();
     addEventToCopyKey();
-  });
+  };
 
   /**
    * キーラベルHTMLの変更
@@ -188,17 +188,17 @@ window.addEventListener("DOMContentLoaded", async () => {
   }
 
   // キーグループの削除
-  deleteButton.addEventListener("click", async () => {});
+  deleteButton.onclick = async () => {};
 
   // ダークモードの切り替え
   const themeChangeButton = document.querySelector("#theme-change-button");
-  themeChangeButton.addEventListener("click", window.api.toggleDarkmode);
+  themeChangeButton.onclick = window.api.toggleDarkmode;
 
   // ホームに戻る
   const backButton = document.querySelector("#back-button");
-  backButton.addEventListener("click", () => {
+  backButton.onclick = () => {
     location.href = "../index/index.html";
-  });
+  };
 
   /** 初期化処理 */
   async function init() {
@@ -220,7 +220,12 @@ window.addEventListener("DOMContentLoaded", async () => {
    * @param {{
    * id: string,
    * name: string,
-   * keys: array
+   * keys: {
+   * id: string,
+   * name: string,
+   * value: string,
+   * isVisible: boolean,
+   * }[]
    * }} keyGroup キーグループデータ
    */
   function buildDetailHtml(keyGroup) {
