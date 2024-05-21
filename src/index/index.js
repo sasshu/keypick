@@ -1,10 +1,29 @@
 import Drag from "../utility/dragging.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
+  /** @type {Object[]} */
   let keyGroups = await window.store.get("keygroups");
   console.log(keyGroups);
   const dropZoneHtml = "<div class='key-drop-zone pt-3'></div>";
   buildKeyGroupsHtml(keyGroups);
+
+  // ダークモードの切り替え
+  /** @type {HTMLElement} */
+  const themeChangeButton = document.querySelector("#theme-change-button");
+  themeChangeButton.onclick = window.api.toggleDarkmode;
+
+  // キー詳細ページへ遷移
+  /** @type {HTMLElement[]} */
+  const keyDetailButtons = document.querySelectorAll(".key-detail-button");
+  keyDetailButtons.forEach((button) => {
+    button.onclick = () => {
+      const keyGroupIndex = keyGroups.findIndex(
+        (group) => group.id == button.name
+      );
+      window.api.passKeyGroupIndex(keyGroupIndex);
+      location.href = "../detail/detail.html";
+    };
+  });
 
   // ドラッグイベントの登録
   const drag = new Drag(
@@ -30,29 +49,26 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   // キーグループを追加
-  const keyGroupAddButton = document.querySelector("#key-group-add-button");
-  keyGroupAddButton.onclick = () => {
-    // window.api.addKeyGroup;
-    console.log("add key-group");
-  };
-
-  // キー詳細ページへ遷移
-  /** @type {HTMLElement[]} */
-  const keyDetailButtons = document.querySelectorAll(".key-detail-button");
-  keyDetailButtons.forEach((button) => {
-    button.onclick = () => {
-      const keyGroupIndex = keyGroups.findIndex(
-        (group) => group.id == button.name
-      );
-      window.api.passKeyGroupIndex(keyGroupIndex);
-      location.href = "../detail/detail.html";
-    };
-  });
-
-  // ダークモードの切り替え
   /** @type {HTMLElement} */
-  const themeChangeButton = document.querySelector("#theme-change-button");
-  themeChangeButton.onclick = window.api.toggleDarkmode;
+  const keyGroupAddButton = document.querySelector("#key-group-add-button");
+  keyGroupAddButton.onclick = async () => {
+    keyGroups.push({
+      id: await window.api.generateId("group"),
+      name: "",
+      keys: [
+        {
+          id: await window.api.generateId("key"),
+          name: "",
+          value: "",
+          isVisible: true,
+        },
+      ],
+    });
+    await window.store.set("keygroups", keyGroups);
+
+    window.api.passKeyGroupIndex(keyGroups.length - 1);
+    location.href = "../detail/detail.html";
+  };
 
   /**
    * リストページのHTML全体を作成
@@ -73,7 +89,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       keyGroupsHtmls.push(`
         ${dropZoneHtml}
         <li class="border-b-2 key-group" draggable="true">
-          <button class="key-detail-button hover:opacity-50"
+          <button class="key-detail-button hover:opacity-50 w-full text-left"
             name="${keyGroup.id}">
             ${keyGroup.name}
           </button>

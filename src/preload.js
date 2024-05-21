@@ -2,7 +2,7 @@ const { contextBridge, ipcRenderer } = require("electron");
 
 contextBridge.exposeInMainWorld("api", {
   toggleDarkmode: () => ipcRenderer.invoke("toggle-darkmode"),
-  addKeyGroup: () => ipcRenderer.invoke("add-keyGroup"),
+  generateId: (type) => ipcRenderer.invoke("generate-id", type),
   passKeyGroupIndex: (index) => ipcRenderer.invoke("pass-keyGroupIndex", index),
   recieveKeyGroupIndex: () => ipcRenderer.invoke("recieve-keyGroupIndex"),
 });
