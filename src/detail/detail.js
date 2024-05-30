@@ -108,9 +108,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     await init();
   };
 
-  // キーグループの削除
   const dialog = document.querySelector("#dialog");
-  deleteButton.onclick = () => dialog.showModal();
+  // キーグループの削除
+  deleteButton.onclick = () => {
+    const dialogBody = document.querySelector("#dialog-body");
+    dialogBody.innerHTML = `<p>${keyGroup.name}</p>`;
+
+    dialog.showModal();
+  };
 
   // 削除確認Dialog
   const dialogAcceptButton = document.querySelector("#dialog-accept-button");
