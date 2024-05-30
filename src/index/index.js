@@ -8,12 +8,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   buildKeyGroupsHtml(keyGroups);
 
   // ダークモードの切り替え
-  /** @type {HTMLElement} */
   const themeChangeButton = document.querySelector("#theme-change-button");
   themeChangeButton.onclick = window.api.toggleDarkmode;
 
   // キー詳細ページへ遷移
-  /** @type {HTMLElement[]} */
   const keyDetailButtons = document.querySelectorAll(".key-detail-button");
   keyDetailButtons.forEach((button) => {
     button.onclick = () => {
@@ -49,7 +47,6 @@ window.addEventListener("DOMContentLoaded", async () => {
   });
 
   // キーグループを追加
-  /** @type {HTMLElement} */
   const keyGroupAddButton = document.querySelector("#key-group-add-button");
   keyGroupAddButton.onclick = async () => {
     keyGroups.push({

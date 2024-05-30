@@ -64,5 +64,43 @@
         </div>
       </div>
     </div>
+    <dialog id="dialog" class="w-1/2 h-1/3 rounded-xl">
+      <!-- <span
+        id="dialog-close-button"
+        class="float-right mr-2 text-2xl cursor-pointer"
+      >
+        ×
+      </span> -->
+      <div id="dialog-content" class="h-full p-4 flex flex-col">
+        <div id="dialog-header" class="">
+          <span
+            id="dialog-close-button"
+            class="float-right text-2xl cursor-pointer relative bottom-3"
+          >
+            ×
+          </span>
+          <h1 class="font-bold">このキー情報を削除してもよろしいですか？</h1>
+        </div>
+        <div id="dialog-body" class="py-3 flex-auto">
+          <p>キー情報キー情報</p>
+        </div>
+        <div id="dialog-footer" class="">
+          <div class="float-right">
+            <button
+              id="dialog-cancel-button"
+              class="border-none text-indigo-600 hover:opacity-50 rounded-md px-3 py-1 mx-1"
+            >
+              キャンセル
+            </button>
+            <button
+              id="dialog-accept-button"
+              class="border-none text-rose-600 hover:opacity-50 rounded-md px-3 py-1 mx-1"
+            >
+              削除
+            </button>
+          </div>
+        </div>
+      </div>
+    </dialog>
   </body>
 </html>

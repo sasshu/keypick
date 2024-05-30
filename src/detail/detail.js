@@ -3,21 +3,20 @@ import Drag from "../utility/dragging.js";
 window.addEventListener("DOMContentLoaded", async () => {
   /** @type {Object[]} */
   let keyGroups;
+  /** @type {number} */
   let keyGroupIndex;
+  /** @type {Object} */
   let keyGroup;
   /** @type {boolean} */
   let isEditing = false;
   /** @type {Drag} */
   let drag;
+  /** @type {string} */
   const dropZoneHtml = "<div class='key-drop-zone pt-5'></div>";
 
-  /** @type {HTMLElement} */
   const addButton = document.querySelector("#key-add-button");
-  /** @type {HTMLElement} */
   const editButton = document.querySelector("#key-edit-button");
-  /** @type {HTMLElement} */
   const storeButton = document.querySelector("#key-store-button");
-  /** @type {HTMLElement} */
   const deleteButton = document.querySelector("#key-group-delete-button");
 
   await init();
@@ -32,7 +31,10 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // ホームに戻る
   const backButton = document.querySelector("#back-button");
-  backButton.onclick = () => {
+  backButton.onclick = async () => {
+    if (!keyGroup.name) {
+      await deleteKeyGroup();
+    }
     location.href = "../index/index.html";
   };
 
@@ -70,14 +72,22 @@ window.addEventListener("DOMContentLoaded", async () => {
   };
 
   // キーの編集/編集キャンセル
-  editButton.onclick = () => {
+  editButton.onclick = async () => {
     toggleEditMode();
+    if (!keyGroup.name) {
+      await deleteKeyGroup();
+      location.href = "../index/index.html";
+    }
   };
 
   // 編集内容の保存
   storeButton.onclick = async () => {
-    const title =
-      document.querySelector("#key-group-title").firstElementChild.value;
+    const titleInput =
+      document.querySelector("#key-group-title").firstElementChild;
+    if (!titleInput.value) {
+      titleInput.reportValidity();
+      return;
+    }
     const valueInputs = document.querySelectorAll(".value-input");
     const keyList = [];
     valueInputs.forEach((valueInput) => {
@@ -91,7 +101,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     const newKeyGroup = {
       id: keyGroup.id,
-      name: title,
+      name: titleInput.value,
       keys: keyList,
     };
     await updateKeyGroup(newKeyGroup);
@@ -99,11 +109,18 @@ window.addEventListener("DOMContentLoaded", async () => {
   };
 
   // キーグループの削除
-  deleteButton.onclick = async () => {
-    keyGroups.splice(keyGroupIndex, 1);
-    await window.store.set("keygroups", keyGroups);
+  const dialog = document.querySelector("#dialog");
+  deleteButton.onclick = () => dialog.showModal();
+
+  // 削除確認Dialog
+  const dialogAcceptButton = document.querySelector("#dialog-accept-button");
+  dialogAcceptButton.onclick = async () => {
+    await deleteKeyGroup();
     location.href = "../index/index.html";
   };
+  const dialogCancelButton = document.querySelector("#dialog-cancel-button");
+  const dialogCloseButton = document.querySelector("#dialog-close-button");
+  dialogCancelButton.onclick = dialogCloseButton.onclick = () => dialog.close();
 
   /** 初期化処理 */
   async function init() {
@@ -312,6 +329,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         placeholder="タイトル"
         value="${titleWrapper.firstElementChild.textContent.trim()}"
         class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2"
+        required
       />`;
       labelWrappers.forEach((element) => {
         changeKeyLabelHtmlToUpdate(element);
@@ -363,5 +381,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     document.querySelectorAll(".key-content").forEach((element) => {
       element.draggable = !element.draggable;
     });
+  }
+
+  /** キーグループの削除 */
+  async function deleteKeyGroup() {
+    keyGroups.splice(keyGroupIndex, 1);
+    await window.store.set("keygroups", keyGroups);
   }
 });
