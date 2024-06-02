@@ -14,6 +14,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   /** @type {string} */
   const dropZoneHtml = "<div class='key-drop-zone pt-5'></div>";
 
+  const groupCopyButton = document.querySelector("#group-copy-button");
   const addButton = document.querySelector("#key-add-button");
   const editButton = document.querySelector("#key-edit-button");
   const storeButton = document.querySelector("#key-store-button");
@@ -25,10 +26,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     await toggleEditMode();
   }
 
-  // ダークモードの切り替え
-  const themeChangeButton = document.querySelector("#theme-change-button");
-  themeChangeButton.onclick = await window.api.toggleDarkmode;
-
   // ホームに戻る
   const backButton = document.querySelector("#back-button");
   backButton.onclick = async () => {
@@ -37,6 +34,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     location.href = "../index/index.html";
   };
+
+  // markdown形式でグループ情報をクリップボードにコピー
+  groupCopyButton.onclick = () => {
+    const keyTextLines = [];
+    keyTextLines.push(`【${keyGroup.name}】\n`);
+    keyGroup.keys.forEach((key) => {
+      keyTextLines.push(`・${key.name}：${key.value}\n`);
+    });
+    navigator.clipboard.writeText(keyTextLines.join("")).then(async () => {
+      showMessageBox("すべてのキー値をクリップボードにコピーしました。");
+    });
+  };
+
+  // ダークモードの切り替え
+  const themeChangeButton = document.querySelector("#theme-change-button");
+  themeChangeButton.onclick = await window.api.toggleDarkmode;
 
   // キーの追加
   addButton.onclick = async () => {
@@ -131,6 +144,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   async function init() {
     isEditing = false;
     editButton.textContent = "編集";
+    groupCopyButton.parentElement.classList.remove("hidden");
     addButton.classList.add("invisible");
     storeButton.classList.add("hidden");
     deleteButton.classList.remove("hidden");
@@ -185,10 +199,13 @@ window.addEventListener("DOMContentLoaded", async () => {
           ).value;
           navigator.clipboard.writeText(textToCopy).then(() => {
             console.log(textToCopy);
-            button.textContent = "check";
-            setTimeout(() => {
-              button.textContent = "content_copy";
-            }, 2000);
+            // button.textContent = "check";
+            // setTimeout(() => {
+            //   button.textContent = "content_copy";
+            // }, 2000);
+            showMessageBox(
+              `「${button.value}」のキー値をクリップボードにコピーしました。`
+            );
           });
         }
       };
@@ -278,7 +295,8 @@ window.addEventListener("DOMContentLoaded", async () => {
            ${key.isVisible ? "visibility_off" : "visibility"}
        </button>
        <button name="${key.id}"
-         class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">
+         class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2"
+         value="${key.name}">
            ${isEditing ? "delete" : "content_copy"}
        </button>
      </li>
@@ -324,6 +342,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const copyButtons = document.querySelectorAll(".copy-button");
 
     if (isEditing) {
+      groupCopyButton.parentElement.classList.add("hidden");
       editButton.textContent = "キャンセル";
       deleteButton.classList.add("hidden");
       addButton.classList.remove("invisible");
@@ -392,5 +411,32 @@ window.addEventListener("DOMContentLoaded", async () => {
   async function deleteKeyGroup() {
     keyGroups.splice(keyGroupIndex, 1);
     await window.store.set("keygroups", keyGroups);
+  }
+
+  /**
+   * ウィンドウ右下のメッセージ要素作成
+   * @param {string} message 表示するメッセージ
+   * @param {string} color 背景色（tailwindcssクラス名）https://tailwindcss.com/docs/background-color
+   */
+  function showMessageBox(message, color = "bg-blue-200") {
+    const messageWrapper = document.querySelector("#message-wrapper");
+    const messageBox = document.createElement("div");
+    messageBox.classList.add(
+      "w-80",
+      "shadow-md",
+      "rounded-md",
+      "text-black",
+      "my-1",
+      "py-4",
+      "px-3",
+      color,
+      "fadeUp"
+    );
+    messageBox.innerHTML = message;
+    messageWrapper.appendChild(messageBox);
+
+    setTimeout(() => {
+      messageBox.remove();
+    }, 2000);
   }
 });
