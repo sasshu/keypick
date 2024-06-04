@@ -17,19 +17,20 @@
       "output": "dist"
     },
     "files": [
-      "assets",
+      "asset",
       "src",
       "package.json",
-      "package-lock.json"
+      "package-lock.json",
+      "node_modules"
     ],
     "mac": {
-      "icon": "assets/mac/app.icns",
+      "icon": "asset/icon/mac/app.icns",
       "target": [
         "dmg"
       ]
     },
     "win": {
-      "icon": "assets/win/app.ico",
+      "icon": "asset/icon/windows/app.ico",
       "target": "nsis"
     },
     "nsis": {

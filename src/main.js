@@ -2,9 +2,9 @@ const { app, BrowserWindow, ipcMain, nativeTheme } = require("electron");
 const path = require("node:path");
 const Store = require("electron-store");
 
-require("electron-reload")(__dirname, {
-  electron: require("${__dirname}/../../node_modules/electron"),
-});
+// require("electron-reload")(__dirname, {
+//   electron: require(path.resolve("${__dirname}/../node_modules/electron")),
+// });
 
 const store = new Store({
   defaults: {
@@ -63,15 +63,6 @@ ipcMain.handle("generate-id", (event, type) => {
 });
 
 const createWindow = () => {
-  // const mainWindow = new BrowserWindow({
-  //   width: 750,
-  //   height: 500,
-  //   title: "keypick",
-  //   webPreferences: {
-  //     preload: path.join(__dirname, "preload.js"),
-  //   },
-  // });
-
   const mainWindow = new BrowserWindow({
     x: store.get("window.x"),
     y: store.get("window.y"),
@@ -101,7 +92,7 @@ app.setAboutPanelOptions({
       : `v${app.getVersion()} (electron@${process.versions["electron"]})`,
   copyright: "Copyright 2024 sasshu",
   version: `electron@${process.versions["electron"]}`,
-  iconPath: path.join(__dirname, "icon.png"),
+  iconPath: path.join(__dirname, "/../asset/icon/app.png"),
 });
 
 app.whenReady().then(() => {
