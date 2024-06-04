@@ -655,8 +655,8 @@ video {
   flex: none;
 }
 
-.basis-3\/12 {
-  flex-basis: 25%;
+.basis-2\/5 {
+  flex-basis: 40%;
 }
 
 .cursor-pointer {
@@ -677,6 +677,16 @@ video {
 
 .items-center {
   align-items: center;
+}
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rounded-full {
@@ -773,6 +783,11 @@ video {
   padding-right: 0.75rem;
 }
 
+.px-4 {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .px-6 {
   padding-left: 1.5rem;
   padding-right: 1.5rem;
@@ -866,7 +881,7 @@ video {
   font-weight: 400;
 
   src: local("Material Icons"),
-    url(../googlefonts/MaterialIconsOutlined-Regular.otf);
+    url(../asset/googlefonts/MaterialIconsOutlined-Regular.otf);
 }
 
 .material-icons {

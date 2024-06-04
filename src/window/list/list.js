@@ -1,9 +1,8 @@
-import Drag from "../utility/dragging.js";
+import Drag from "../../utility/dragging.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   /** @type {Object[]} */
   let keyGroups = await window.store.get("keygroups");
-  console.log(keyGroups);
   const dropZoneHtml = "<div class='key-drop-zone pt-3'></div>";
   buildKeyGroupsHtml(keyGroups);
 

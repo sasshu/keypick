@@ -1,5 +1,6 @@
 {
   "name": "keypick",
+  "productName": "keypick",
   "version": "1.0.0",
   "description": "Hello World!",
   "main": "src/main.js",
@@ -7,10 +8,38 @@
   "license": "MIT",
   "devDependencies": {
     "electron": "^29.1.6",
+    "electron-builder": "^25.0.0-alpha.9",
     "tailwindcss": "^3.4.3"
   },
+  "build": {
+    "appId": "com.sasshu.keypick",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "assets",
+      "src",
+      "package.json",
+      "package-lock.json"
+    ],
+    "mac": {
+      "icon": "assets/mac/app.icns",
+      "target": [
+        "dmg"
+      ]
+    },
+    "win": {
+      "icon": "assets/win/app.ico",
+      "target": "nsis"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "node_modules/.bin/electron-builder"
   },
   "dependencies": {
     "electron-reload": "^2.0.0-alpha.1",

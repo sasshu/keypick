@@ -7,7 +7,7 @@
   font-style: normal;
   font-weight: 400;
   src: local("Material Icons"),
-    url(../googlefonts/MaterialIconsOutlined-Regular.otf);
+    url(../asset/googlefonts/MaterialIconsOutlined-Regular.otf);
 }
 .material-icons {
   font-family: "Material Icons";

@@ -1,4 +1,4 @@
-import Drag from "../utility/dragging.js";
+import Drag from "../../utility/dragging.js";
 
 window.addEventListener("DOMContentLoaded", async () => {
   /** @type {Object[]} */
@@ -18,7 +18,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const addButton = document.querySelector("#key-add-button");
   const editButton = document.querySelector("#key-edit-button");
   const storeButton = document.querySelector("#key-store-button");
-  const deleteButton = document.querySelector("#key-group-delete-button");
+  const groupDeleteButton = document.querySelector("#group-delete-button");
 
   await init();
 
@@ -32,7 +32,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!keyGroup.name) {
       await deleteKeyGroup();
     }
-    location.href = "../index/index.html";
+    goBackListPage();
   };
 
   // markdown形式でグループ情報をクリップボードにコピー
@@ -99,7 +99,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     toggleEditMode();
     if (!keyGroup.name) {
       await deleteKeyGroup();
-      location.href = "../index/index.html";
+      goBackListPage();
     }
   };
 
@@ -133,7 +133,7 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   const dialog = document.querySelector("#dialog");
   // キーグループの削除
-  deleteButton.onclick = () => {
+  groupDeleteButton.onclick = () => {
     const dialogBody = document.querySelector("#dialog-body");
     dialogBody.innerHTML = `<p>${keyGroup.name}</p>`;
 
@@ -144,7 +144,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   const dialogAcceptButton = document.querySelector("#dialog-accept-button");
   dialogAcceptButton.onclick = async () => {
     await deleteKeyGroup();
-    location.href = "../index/index.html";
+    goBackListPage();
   };
   const dialogCancelButton = document.querySelector("#dialog-cancel-button");
   const dialogCloseButton = document.querySelector("#dialog-close-button");
@@ -157,7 +157,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     groupCopyButton.parentElement.classList.remove("hidden");
     addButton.classList.add("invisible");
     storeButton.classList.add("hidden");
-    deleteButton.classList.remove("hidden");
+    groupDeleteButton.classList.remove("hidden");
 
     keyGroups = await window.store.get("keygroups");
     keyGroupIndex = await window.api.recieveKeyGroupIndex();
@@ -217,7 +217,6 @@ window.addEventListener("DOMContentLoaded", async () => {
             `.value-input[name='${button.name}']`
           ).value;
           navigator.clipboard.writeText(textToCopy).then(() => {
-            console.log(textToCopy);
             showMessageBox(
               `「${button.value}」のキー値をクリップボードにコピーしました。`
             );
@@ -267,7 +266,6 @@ window.addEventListener("DOMContentLoaded", async () => {
    * }} keyGroup キーグループデータ
    */
   function buildDetailHtml(keyGroup) {
-    console.log(keyGroup);
     document.querySelector(
       "#key-group-title"
     ).innerHTML = `<h1 class="text-2xl font-bold">${keyGroup.name}</h1>`;
@@ -297,12 +295,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   function prepareKeyLineHtml(key) {
     return `
      <li class="border-b-2 flex items-center key-content" draggable="${!isEditing}">
-       <div class="key-label basis-3/12 max-w-40 mx-2">
-         <p class="text-right">${key.name}</p>
+       <div class="key-label basis-2/5 max-w-40 mx-2 overflow-hidden">
+         <p class="text-right truncate">${key.name}</p>
        </div>
        <input name="${key.id}"
          type="${key.isVisible ? "text" : "password"}"
-         class="value-input flex-auto mx-2 p-2 bg-transparent outline-none"
+         class="value-input flex-auto mx-2 p-2 bg-transparent outline-none truncate"
          value="${key.value}"
          readonly/>
        <button name="${key.id}"
@@ -365,7 +363,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (isEditing) {
       groupCopyButton.parentElement.classList.add("hidden");
       editButton.textContent = "キャンセル";
-      deleteButton.classList.add("hidden");
+      groupDeleteButton.classList.add("hidden");
       addButton.classList.remove("invisible");
       storeButton.classList.remove("hidden");
 
@@ -414,7 +412,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   function changeValueInputHtmlToUpdate(element) {
     element.readOnly = false;
     element.placeholder = "キー値";
-    element.classList.remove("bg-transparent", "outline-none");
+    element.classList.remove("bg-transparent", "outline-none", "truncate");
     element.classList.add(
       "bg-indigo-100",
       "focus:outline-blue-600",
@@ -460,5 +458,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     setTimeout(() => {
       messageBox.remove();
     }, 2000);
+  }
+
+  /** キーグループのリストページに戻る */
+  function goBackListPage() {
+    location.href = "../list/list.html";
   }
 });
