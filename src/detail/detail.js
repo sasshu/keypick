@@ -79,6 +79,16 @@ window.addEventListener("DOMContentLoaded", async () => {
     // DOMにfragmentを反映
     document.querySelector("#key-list").appendChild(fragment);
 
+    // ツールチップの反映
+    const lastKeyContent =
+      document.querySelectorAll(".key-content")[keyGroup.keys.length];
+    tippy(lastKeyContent.querySelectorAll(".hasTooltip"), {
+      placement: "top",
+      delay: 800,
+      arrow: false,
+      offset: [0, 2],
+    });
+
     // イベントの登録
     addEventToRevealKey();
     addEventToCopyKey();
@@ -154,6 +164,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroup = keyGroups[keyGroupIndex];
     buildDetailHtml(keyGroup);
     registerEvent();
+    // ツールチップの反映
+    tippy(".hasTooltip", {
+      placement: "top",
+      delay: 800,
+      arrow: false,
+      offset: [0, 2],
+    });
   }
 
   /** 各イベントの登録（HTML構造が変化する場合、イベントの再登録必須）*/
@@ -174,10 +191,12 @@ window.addEventListener("DOMContentLoaded", async () => {
         if (button.innerHTML.includes("off")) {
           valueInput.type = "password";
           button.textContent = "visibility";
+          button._tippy.setContent("キー値を表示");
           updateKeyLine({ ...keyGroup.keys[index], isVisible: false });
         } else {
           valueInput.type = "text";
           button.textContent = "visibility_off";
+          button._tippy.setContent("キー値を非表示");
           updateKeyLine({ ...keyGroup.keys[index], isVisible: true });
         }
       };
@@ -199,10 +218,6 @@ window.addEventListener("DOMContentLoaded", async () => {
           ).value;
           navigator.clipboard.writeText(textToCopy).then(() => {
             console.log(textToCopy);
-            // button.textContent = "check";
-            // setTimeout(() => {
-            //   button.textContent = "content_copy";
-            // }, 2000);
             showMessageBox(
               `「${button.value}」のキー値をクリップボードにコピーしました。`
             );
@@ -291,11 +306,17 @@ window.addEventListener("DOMContentLoaded", async () => {
          value="${key.value}"
          readonly/>
        <button name="${key.id}"
-         class="visibility-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2">
+         class="visibility-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2 hasTooltip"
+         data-tippy-content="${
+           key.isVisible ? "キー値を非表示" : "キー値を表示"
+         }">
            ${key.isVisible ? "visibility_off" : "visibility"}
        </button>
        <button name="${key.id}"
-         class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2"
+         class="copy-button material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2 hasTooltip"
+         data-tippy-content="${
+           isEditing ? "キー値を削除" : "キー値をクリップボードにコピー"
+         }"
          value="${key.name}">
            ${isEditing ? "delete" : "content_copy"}
        </button>
@@ -363,6 +384,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
       copyButtons.forEach((element) => {
         element.innerHTML = "delete";
+        element._tippy.setContent("キー値を削除");
       });
 
       toggleKeyDraggable();

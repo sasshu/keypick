@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta
       http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
+      content="default-src 'self' 'sha256-WWn0l9kVjXaC+CGcbxP6Zyac31v1Cjkx2VMnFR3uVng='; script-src 'self' https://unpkg.com/ "
     />
     <title>keypick</title>
     <!-- css -->
@@ -15,12 +15,16 @@
     <script type="module" src="index.js"></script>
     <script type="module" src="../utility/dragging.js"></script>
 
+    <script src="https://unpkg.com/@popperjs/core@2"></script>
+    <script src="https://unpkg.com/tippy.js@6"></script>
+
     <div class="w-full max-w-screen-lg my-6 mx-auto px-6">
       <div class="p-1 border-b-4 flex">
         <h1 class="text-2xl font-bold flex-auto">キー情報一覧</h1>
         <button
           id="theme-change-button"
-          class="material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2"
+          class="material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2 hasTooltip"
+          data-tippy-content="テーマカラーの切り替え"
         >
           brightness_medium
         </button>
@@ -30,7 +34,8 @@
         <ul id="key-group-list" class="list-decimal"></ul>
         <button
           id="key-group-add-button"
-          class="material-icons hover:opacity-50 rounded-full p-1"
+          class="material-icons hover:opacity-50 rounded-full p-1 hasTooltip"
+          data-tippy-content="新規キー情報を作成"
         >
           add
         </button>

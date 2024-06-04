@@ -7,6 +7,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   const dropZoneHtml = "<div class='key-drop-zone pt-3'></div>";
   buildKeyGroupsHtml(keyGroups);
 
+  // ツールチップの反映
+  tippy(".hasTooltip", {
+    placement: "top",
+    delay: 800,
+    arrow: false,
+    offset: [0, 2],
+  });
+
   // ダークモードの切り替え
   const themeChangeButton = document.querySelector("#theme-change-button");
   themeChangeButton.onclick = window.api.toggleDarkmode;
