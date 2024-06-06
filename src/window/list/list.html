@@ -20,7 +20,7 @@
 
     <div class="w-full max-w-screen-lg my-6 mx-auto px-6">
       <div class="p-1 border-b-4 flex">
-        <h1 class="text-2xl font-bold flex-auto">キー情報一覧</h1>
+        <h1 class="text-2xl font-bold flex-auto py-1">キー情報一覧</h1>
         <button
           id="theme-change-button"
           class="material-icons flex-none hover:opacity-50 rounded-full p-1 mx-2 hasTooltip"
@@ -31,10 +31,11 @@
       </div>
 
       <div class="py-6 px-10">
+        <div id="no-key-image" class="mx-auto max-w-48"></div>
         <ul id="key-group-list" class="list-decimal"></ul>
         <button
           id="key-group-add-button"
-          class="material-icons hover:opacity-50 rounded-full p-1 hasTooltip"
+          class="material-icons hover:opacity-50 rounded-full p-2 bg-indigo-600 text-white mt-4 mr-6 float-right hasTooltip"
           data-tippy-content="新規キー情報を作成"
         >
           add

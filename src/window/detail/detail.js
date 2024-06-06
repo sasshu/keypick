@@ -268,7 +268,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   function buildDetailHtml(keyGroup) {
     document.querySelector(
       "#key-group-title"
-    ).innerHTML = `<h1 class="text-2xl font-bold">${keyGroup.name}</h1>`;
+    ).innerHTML = `<h1 class="text-2xl font-bold py-1">${keyGroup.name}</h1>`;
 
     const keyListHtmls = [];
     keyGroup.keys.forEach((key, index) => {
@@ -295,12 +295,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   function prepareKeyLineHtml(key) {
     return `
      <li class="border-b-2 flex items-center key-content" draggable="${!isEditing}">
-       <div class="key-label basis-2/5 max-w-40 mx-2 overflow-hidden">
+       <div class="key-label basis-1/2 max-w-52 mx-2 min-w-20">
          <p class="text-right truncate">${key.name}</p>
        </div>
        <input name="${key.id}"
          type="${key.isVisible ? "text" : "password"}"
-         class="value-input flex-auto mx-2 p-2 bg-transparent outline-none truncate"
+         class="value-input flex-auto mx-2 p-2 bg-transparent outline-none truncate rounded-md min-w-20"
          value="${key.value}"
          readonly/>
        <button name="${key.id}"
@@ -371,7 +371,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         type="text"
         placeholder="タイトル"
         value="${titleWrapper.firstElementChild.textContent.trim()}"
-        class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2"
+        class="text-2xl font-bold w-full text-black bg-indigo-100 focus:outline-blue-600 px-2 py-1 rounded-md"
         required
       />`;
       labelWrappers.forEach((element) => {
@@ -401,7 +401,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       name="${element.name}"
       placeholder="ラベル"
       value="${element.textContent.trim()}"
-      class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2"
+      class="w-full text-black bg-indigo-100 focus:outline-blue-600 p-2 rounded-md"
     />`;
   }
 
