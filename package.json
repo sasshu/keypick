@@ -20,8 +20,7 @@
       "asset",
       "src",
       "package.json",
-      "package-lock.json",
-      "node_modules"
+      "package-lock.json"
     ],
     "mac": {
       "icon": "asset/icon/mac/app.icns",
