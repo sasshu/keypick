@@ -73,6 +73,7 @@ const createWindow = () => {
       preload: path.join(__dirname, "preload.js"),
     },
   });
+  mainWindow.setMenuBarVisibility(false);
 
   // 起動時にchromeデベロッパーツールを開く
   // mainWindow.webContents.openDevTools();
