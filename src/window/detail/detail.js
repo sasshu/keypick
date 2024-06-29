@@ -163,7 +163,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     keyGroupIndex = await window.api.recieveKeyGroupIndex();
     keyGroup = keyGroups[keyGroupIndex];
     buildDetailHtml(keyGroup);
-    registerEvent();
+    if (keyGroup.keys.length) {
+      registerEvent();
+    }
     // ツールチップの反映
     tippy(".hasTooltip", {
       placement: "top",
@@ -270,12 +272,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       "#key-group-title"
     ).innerHTML = `<h1 class="text-2xl font-bold py-1">${keyGroup.name}</h1>`;
 
-    const keyListHtmls = [];
-    keyGroup.keys.forEach((key, index) => {
+    const keyListHtmls = [dropZoneHtml];
+    keyGroup.keys.forEach((key) => {
       keyListHtmls.push(`
-     ${dropZoneHtml}
      ${prepareKeyLineHtml(key)}
-     ${index === keyGroup.keys.length - 1 ? dropZoneHtml : ""}
+     ${dropZoneHtml}
      `);
     });
 
