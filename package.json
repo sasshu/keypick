@@ -1,8 +1,8 @@
 {
   "name": "keypick",
   "productName": "keypick",
-  "version": "1.0.0",
-  "description": "Hello World!",
+  "version": "1.0.1",
+  "description": "keypick",
   "main": "src/main.js",
   "author": "sasshu",
   "license": "MIT",
